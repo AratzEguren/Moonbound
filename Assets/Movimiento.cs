@@ -31,13 +31,9 @@ HandleMovement();
     {
         float moveInput = Input.GetAxis("Vertical"); // W/S o flechas arriba/abajo
         float moveSpeed = walkSpeed;
-	Vector3 velocity = moveDirection * moveSpeed;
-        velocity.y = rb.linearVelocity.y; // Mantener la velocidad vertical (gravedad)
-        rb.linearVelocity = velocity;
-
         if (moveInput > 0) // Avanzando
         {
- 	    animator.SetBool("isMoving", true);
+            animator.SetBool("isMoving", true);
             moveDirection = transform.forward;
             moveTimer += Time.deltaTime;
 
@@ -46,18 +42,15 @@ HandleMovement();
                 moveSpeed = runSpeed;
                 animator.SetBool("isStillMoving", true);
             }
-           
-           
         }
-
-        if (moveInput < 0) // Retrocediendo
+        else if (moveInput < 0) // Retrocediendo
         {
             moveDirection = -transform.forward;
             moveSpeed = walkSpeed;
 
             animator.SetBool("isWalkingBackwards", true);
             animator.SetBool("isMoving", false);
-	    animator.SetBool("isStillMoving", false);
+            animator.SetBool("isStillMoving", false);
         }
         else // Sin movimiento
         {
@@ -69,8 +62,12 @@ HandleMovement();
             animator.SetBool("isWalkingBackwards", false);
         }
 
-       
+        // Aplicar la velocidad de movimiento al Rigidbody
+        Vector3 velocity = moveDirection * moveSpeed;
+        velocity.y = rb.linearVelocity.y; // Mantener la velocidad vertical (gravedad)
+        rb.linearVelocity = velocity;
     }
+
 
     void HandleRotation()
     {

@@ -100,6 +100,7 @@ public class Movimiento : MonoBehaviour
             {
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                 animator.SetBool("isJumping", true);
+                animator.SetBool("isLanding", false);
             }
         }
     }
@@ -109,12 +110,14 @@ public class Movimiento : MonoBehaviour
         animator.SetFloat("VelocityY", rb.linearVelocity.y);
     }
 
-    private void OnCollisionStay(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
         // Verificar si el objeto tocado tiene la etiqueta "Ground"
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+            animator.SetBool("isLanding",true);
+            Debug.Log("Landing detected. isGrounded set to true.");
         }
     }
 
@@ -124,6 +127,16 @@ public class Movimiento : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+            Debug.Log("Left ground. isGrounded set to false.");
         }
     }
+
+    private void OnCollisionStay(Collision collision)
+{
+    if (collision.gameObject.CompareTag("Ground"))
+    {
+        animator.SetBool("isLanding", false);
+    }
+}
+
 }

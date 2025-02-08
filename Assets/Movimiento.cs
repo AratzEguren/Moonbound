@@ -2,128 +2,104 @@ using UnityEngine;
 
 public class Movimiento : MonoBehaviour
 {
-    public Animator animator; // Referencia al componente Animator
     public float walkSpeed = 2f;
-    public float runSpeed = 5f;
-    public float rotationSpeed = 360f;
+    public float runSpeed = 4f;
     public float jumpForce = 5f;
+    public LayerMask groundLayer;
 
+    private Animator animator;
     private Rigidbody rb;
+    private float speed;
     private bool isGrounded;
-    private float moveTimer;
-    private Vector3 moveDirection;
+    private bool isJumping;
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        
-HandleMovement();
-        HandleRotation();
+        HandleMovement();
         HandleJump();
         UpdateAnimatorParameters();
     }
 
     void HandleMovement()
     {
-        float moveInput = Input.GetAxis("Vertical"); // W/S o flechas arriba/abajo
-        float moveSpeed = walkSpeed;
-	Vector3 velocity = moveDirection * moveSpeed;
-        velocity.y = rb.linearVelocity.y; // Mantener la velocidad vertical (gravedad)
-        rb.linearVelocity = velocity;
+        float vertical = Input.GetAxis("Vertical");
+        float horizontal = Input.GetAxis("Horizontal");
 
-        if (moveInput > 0) // Avanzando
+        // Calcular velocidad
+        if (vertical > 0)
         {
- 	    animator.SetBool("isMoving", true);
-            moveDirection = transform.forward;
-            moveTimer += Time.deltaTime;
-
-            if (moveTimer >= 1f) // Después de 1 segundo corriendo
-            {
-                moveSpeed = runSpeed;
-                animator.SetBool("isStillMoving", true);
-            }
-           
-           
+            speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+            animator.SetBool("IsWalking", true);
+            animator.SetBool("IsWalkingBackwards", false);
+        }
+        else if (vertical < 0)
+        {
+            speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+            animator.SetBool("IsWalking", false);
+            animator.SetBool("IsWalkingBackwards", true);
+        }
+        else
+        {
+            speed = 0f;
+            animator.SetBool("IsWalking", false);
+            animator.SetBool("IsWalkingBackwards", false);
         }
 
-        if (moveInput < 0) // Retrocediendo
+        if (speed > walkSpeed)
         {
-            moveDirection = -transform.forward;
-            moveSpeed = walkSpeed;
-
-            animator.SetBool("isWalkingBackwards", true);
-            animator.SetBool("isMoving", false);
-	    animator.SetBool("isStillMoving", false);
+            animator.SetBool("IsRunning", true);
         }
-        else // Sin movimiento
+        else
         {
-            moveDirection = Vector3.zero;
-            moveTimer = 0;
-
-            animator.SetBool("isMoving", false);
-            animator.SetBool("isStillMoving", false);
-            animator.SetBool("isWalkingBackwards", false);
+            animator.SetBool("IsRunning", false);
         }
 
-       
-    }
+        // Movimiento del personaje
+        Vector3 direction = transform.forward * vertical + transform.right * horizontal;
+        transform.Translate(direction.normalized * speed * Time.deltaTime, Space.World);
 
-    void HandleRotation()
-    {
-        float turnInput = Input.GetAxis("Horizontal"); // A/D o flechas izquierda/derecha
-        if (turnInput != 0)
+        // Rotación del personaje
+        if (horizontal != 0)
         {
-            float turn = turnInput * rotationSpeed * Time.deltaTime;
-            transform.Rotate(0, turn, 0);
+            transform.Rotate(0, horizontal * 100 * Time.deltaTime, 0);
         }
     }
 
     void HandleJump()
     {
-        if (isGrounded)
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f, groundLayer);
+
+        if (isGrounded && Input.GetKeyDown(KeyCode.Space) && !isJumping)
         {
-            animator.SetBool("isJumping", false);
-            animator.SetBool("isLanding", true);
-
-            if (Input.GetButtonDown("Jump")) // Espacio por defecto
-            {
-		animator.SetBool("isWalkingBackwards", false);
-
-                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                animator.SetBool("isJumping", true);
-                animator.SetBool("isLanding", false);
-            }
+            isJumping = true;
+            animator.SetBool("IsJumping", true);
+            animator.SetBool("IsLanded", false);
+            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
         }
-        else
+
+        if (rb.velocity.y < 0)
         {
-            animator.SetBool("isLanding", false);
+            animator.SetFloat("VelocityY", rb.velocity.y);
+        }
+
+        if (isGrounded && rb.velocity.y <= 0)
+        {
+            animator.SetBool("IsJumping", false);
+            animator.SetBool("IsLanded", true);
         }
     }
 
     void UpdateAnimatorParameters()
     {
-        animator.SetFloat("VelocityY", rb.linearVelocity.y);
+        animator.SetFloat("VelocityY", rb.velocity.y);
+        animator.SetFloat("Speed", speed);
     }
 
-    private void OnCollisionStay(Collision collision)
-    {
-        // Verificar si el objeto tocado tiene la etiqueta "Ground"
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
-    }
 
-    private void OnCollisionExit(Collision collision)
-    {
-        // Cuando el objeto deja de tocar el suelo
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
-    }
 }

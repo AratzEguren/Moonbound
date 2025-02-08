@@ -4,7 +4,7 @@ public class Movimiento : MonoBehaviour
 {
     public Animator animator; // Referencia al componente Animator
     public float walkSpeed = 2f;
-    public float runSpeed = 7f;
+    public float runSpeed = 5f;
     public float rotationSpeed = 360f;
     public float jumpForce = 5f;
     private float moveTimer;
@@ -113,7 +113,7 @@ public class Movimiento : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // Verificar si el objeto tocado tiene la etiqueta "Ground"
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Platform"))
+        if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
             animator.SetBool("isLanding",true);
@@ -124,7 +124,7 @@ public class Movimiento : MonoBehaviour
     private void OnCollisionExit(Collision collision)
     {
         // Cuando el objeto deja de tocar el suelo
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Platform"))
+        if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
             Debug.Log("Left ground. isGrounded set to false.");
@@ -133,7 +133,7 @@ public class Movimiento : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
 {
-    if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Platform"))
+    if (collision.gameObject.CompareTag("Ground"))
     {
         animator.SetBool("isLanding", false);
     }

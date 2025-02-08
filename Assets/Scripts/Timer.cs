@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Timer : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class Timer : MonoBehaviour
     public GameObject gameOverScreen;
 
     private float timeLimit = 180f;
+    private bool isGameOver = false;
+
 
     void Start()
     {
@@ -19,14 +22,28 @@ public class Timer : MonoBehaviour
 
     void Update()
     {
-        if (timeElapsed < timeLimit)
+        
+     if (!isGameOver)
         {
-        timeElapsed += Time.deltaTime; // Incrementa el tiempo con el tiempo real
-        UpdateTimerText();
-        }else{
-            ShowGameOverScreen();
+            if (timeElapsed < timeLimit)
+            {
+                timeElapsed += Time.deltaTime; // Incrementa el tiempo con el tiempo real
+                UpdateTimerText();
+            }
+            else
+            {
+                ShowGameOverScreen();
+            }
+        }
+        else
+        {
+            if (Input.GetButtonDown("Jump"))
+            {
+                ReloadLevel();
+            }
         }
     }
+
 
     private void UpdateTimerText()
     {
@@ -42,7 +59,14 @@ public class Timer : MonoBehaviour
     {
         gameOverScreen.SetActive(true);
         // Disable player movement
+        isGameOver = true;
         this.enabled = false; // Disable this script to stop the timer
+    }
+
+     private void ReloadLevel()
+    {
+        // Reload the current scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
 

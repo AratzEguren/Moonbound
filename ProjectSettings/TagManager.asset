@@ -9,6 +9,8 @@ TagManager:
   - eliminar
   - rebotar
   - Character
+  - Coin
+  - PowerUp
   layers:
   - Default
   - TransparentFX

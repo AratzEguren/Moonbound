@@ -62,6 +62,13 @@ public class Movimiento : MonoBehaviour
 
         // Movimiento del personaje
         Vector3 direction = transform.forward * vertical + transform.right * horizontal;
+
+        // Invertir la dirección si es necesario
+        if (vertical < 0)
+        {
+            direction = -direction; // Invertir la dirección si se está moviendo hacia atrás
+        }
+
         transform.Translate(direction.normalized * speed * Time.deltaTime, Space.World);
 
         // Rotación del personaje
@@ -80,16 +87,17 @@ public class Movimiento : MonoBehaviour
             isJumping = true;
             animator.SetBool("IsJumping", true);
             animator.SetBool("IsLanded", false);
-            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
         }
 
-        if (rb.velocity.y < 0)
+        if (rb.linearVelocity.y < 0)
         {
-            animator.SetFloat("VelocityY", rb.velocity.y);
+            animator.SetFloat("VelocityY", rb.linearVelocity.y);
         }
 
-        if (isGrounded && rb.velocity.y <= 0)
+        if (isGrounded && rb.linearVelocity.y <= 0)
         {
+            isJumping = false; // Restablecer isJumping al aterrizar
             animator.SetBool("IsJumping", false);
             animator.SetBool("IsLanded", true);
         }
@@ -97,9 +105,7 @@ public class Movimiento : MonoBehaviour
 
     void UpdateAnimatorParameters()
     {
-        animator.SetFloat("VelocityY", rb.velocity.y);
+        animator.SetFloat("VelocityY", rb.linearVelocity.y);
         animator.SetFloat("Speed", speed);
     }
-
-
 }

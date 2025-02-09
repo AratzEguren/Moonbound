@@ -28,7 +28,7 @@ public class RespawnOnGround : MonoBehaviour
             // Restablecemos la velocidad y la rotación del Rigidbody
             if (rb != null)
             {
-                rb.velocity = Vector3.zero; // Velocidad lineal a cero
+                rb.linearVelocity = Vector3.zero; // Velocidad lineal a cero
                 rb.angularVelocity = Vector3.zero; // Velocidad angular a cero
             }
         }

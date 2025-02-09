@@ -11,6 +11,7 @@ TagManager:
   - Character
   - Coin
   - PowerUp
+  - Bounce
   layers:
   - Default
   - TransparentFX

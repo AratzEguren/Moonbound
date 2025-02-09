@@ -1,21 +1,18 @@
 using UnityEngine;
 using TMPro;
 
-
 public class CoinCounter : MonoBehaviour
 {
-    public TextMeshProUGUI coinText; // Asigna el TextMeshProUGUI desde el Inspector
-    public int totalCoins = 30; // Total de monedas en el nivel
-    private int currentCoins = 0; // Monedas recolectadas
+    public TextMeshProUGUI coinText; // Assign the TextMeshProUGUI from the Inspector
+    public int totalCoins = 30; // Total coins in the level
+    private int currentCoins = 0; // Collected coins
 
     public WinScreen victoryScreen;
-
-    public TextMeshPro VictoryText;
+    public Timer timer; // Reference to the Timer script
 
     void Start()
     {
         UpdateCoinText();
-        
     }
 
     public void AddCoin()
@@ -28,13 +25,16 @@ public class CoinCounter : MonoBehaviour
             if (currentCoins >= totalCoins)
             {
                 victoryScreen.ShowWinScreen();
-                var playerController = Object.FindFirstObjectByType<Movimiento>();
+                timer.FreezeTimer(); // Freeze the timer when all coins are collected
+                var playerController = FindObjectOfType<Movimiento>();
                 if (playerController != null)
                 {
                     playerController.enabled = false;
                 }
+                float finalTime = timer.GetElapsedTime();
+                victoryScreen.UpdateWinText(finalTime);
+                StartCoroutine(victoryScreen.CountdownAndLoadScene(5f));
             }
-      
         }
     }
 

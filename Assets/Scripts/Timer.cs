@@ -4,30 +4,31 @@ using UnityEngine.SceneManagement;
 
 public class Timer : MonoBehaviour
 {
-    public TextMeshProUGUI timerText; // Asigna el TextMeshProUGUI desde el Inspector
-    private float timeElapsed = 0f; // Tiempo transcurrido
+    public TextMeshProUGUI timerText; // Assign the TextMeshProUGUI from the Inspector
+    private float timeElapsed = 0f; // Time elapsed
 
     public GameObject gameOverScreen;
+    public GameObject winScreen; // Add a reference to the win screen
+
+    private bool isGameOver = false;
+    private bool isGamePaused = false; // To check if the game is paused (timer freeze)
+    private bool hasWon = false; // To check if the player has won
 
     private float timeLimit = 180f;
-    private bool isGameOver = false;
-
 
     void Start()
     {
-         
-            gameOverScreen.SetActive(false); // Ensure the game over screen is hidden at the start
-
-    } 
+        gameOverScreen.SetActive(false); // Ensure the game over screen is hidden at the start
+        winScreen.SetActive(false); // Ensure the win screen is hidden at the start
+    }
 
     void Update()
     {
-        
-     if (!isGameOver)
+        if (!isGameOver && !isGamePaused)
         {
             if (timeElapsed < timeLimit)
             {
-                timeElapsed += Time.deltaTime; // Incrementa el tiempo con el tiempo real
+                timeElapsed += Time.deltaTime; // Increment the time with real time
                 UpdateTimerText();
             }
             else
@@ -35,38 +36,47 @@ public class Timer : MonoBehaviour
                 ShowGameOverScreen();
             }
         }
-        else
-        {
-            if (Input.GetButtonDown("Jump"))
-            {
-                ReloadLevel();
-            }
-        }
     }
-
 
     private void UpdateTimerText()
     {
-        int minutes = Mathf.FloorToInt(timeElapsed / 60); // Calcula los minutos
-        int seconds = Mathf.FloorToInt(timeElapsed % 60); // Calcula los segundos
-        int milliseconds = Mathf.FloorToInt((timeElapsed * 100) % 100); // Calcula los milisegundos
+        int minutes = Mathf.FloorToInt(timeElapsed / 60); // Calculate minutes
+        int seconds = Mathf.FloorToInt(timeElapsed % 60); // Calculate seconds
+        int milliseconds = Mathf.FloorToInt((timeElapsed * 100) % 100); // Calculate milliseconds
 
-        // Actualiza el texto con el formato: 0:00:00
+        // Update the text with the format: 0:00:00
         timerText.text = $"{minutes}:{seconds:00}:{milliseconds:00}";
     }
 
-     private void ShowGameOverScreen()
+    private void ShowGameOverScreen()
     {
-        gameOverScreen.SetActive(true);
-        // Disable player movement
-        isGameOver = true;
-        this.enabled = false; // Disable this script to stop the timer
+        if (!hasWon) // Only show the game over screen if the player hasn't won
+        {
+            gameOverScreen.SetActive(true);
+            isGameOver = true; // Mark game over state
+            this.enabled = false; // Disable this script to stop the timer
+        }
     }
 
-     private void ReloadLevel()
+    public void FreezeTimer()
     {
-        // Reload the current scene
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        isGamePaused = true; // Freeze the timer
+    }
+
+    public void UnfreezeTimer()
+    {
+        isGamePaused = false; // Unfreeze the timer
+    }
+
+    public void ShowWinScreen()
+    {
+        winScreen.SetActive(true);
+        hasWon = true; // Mark the win state
+        FreezeTimer(); // Freeze the timer when the win screen is shown
+    }
+
+    public float GetElapsedTime()
+    {
+            return timeElapsed;
     }
 }
-

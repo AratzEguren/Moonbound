@@ -7,10 +7,10 @@ public class Movimiento : MonoBehaviour
     public float runSpeed = 5f;
     public float rotationSpeed = 360f;
     public float jumpForce = 5f;
+    private float moveTimer;
 
     private Rigidbody rb;
     private bool isGrounded;
-    private float moveTimer;
     private Vector3 moveDirection;
 
     void Start()
@@ -20,8 +20,8 @@ public class Movimiento : MonoBehaviour
 
     void Update()
     {
-        
-HandleMovement();
+        animator = GetComponent<Animator>();
+        HandleMovement();
         HandleRotation();
         HandleJump();
         UpdateAnimatorParameters();
@@ -31,45 +31,53 @@ HandleMovement();
     {
         float moveInput = Input.GetAxis("Vertical"); // W/S o flechas arriba/abajo
         float moveSpeed = walkSpeed;
-	Vector3 velocity = moveDirection * moveSpeed;
+
+        Vector3 velocity = moveDirection * moveSpeed;
         velocity.y = rb.linearVelocity.y; // Mantener la velocidad vertical (gravedad)
         rb.linearVelocity = velocity;
 
         if (moveInput > 0) // Avanzando
         {
- 	    animator.SetBool("isMoving", true);
             moveDirection = transform.forward;
+            moveSpeed = walkSpeed;
+
+            animator.SetBool("isMoving", true);
+            animator.SetBool("isStillMoving", false);
+            animator.SetBool("isWalkingBackwards", false);
+            animator.SetBool("isRunningBackWards", false);
+
             moveTimer += Time.deltaTime;
 
-            if (moveTimer >= 1f) // Después de 1 segundo corriendo
+            if (moveTimer >= 2f) // Después de 2 segundo andando, corre
             {
                 moveSpeed = runSpeed;
+                animator.SetBool("isMoving", false);
+                animator.SetBool("isRunningBackWards", false);
                 animator.SetBool("isStillMoving", true);
+                animator.SetBool("isWalkingBackwards", false);
             }
-           
-           
         }
+        
 
-        if (moveInput < 0) // Retrocediendo
+       
+        else if (moveInput < 0) // Retrocediendo
         {
             moveDirection = -transform.forward;
             moveSpeed = walkSpeed;
 
-            animator.SetBool("isWalkingBackwards", true);
             animator.SetBool("isMoving", false);
-	    animator.SetBool("isStillMoving", false);
+            animator.SetBool("isStillMoving", false);
+            animator.SetBool("isRunningBackWards", false);
+            animator.SetBool("isWalkingBackwards", true);
         }
         else // Sin movimiento
         {
             moveDirection = Vector3.zero;
-            moveTimer = 0;
-
             animator.SetBool("isMoving", false);
             animator.SetBool("isStillMoving", false);
             animator.SetBool("isWalkingBackwards", false);
+            animator.SetBool("isRunningBackWards", false);
         }
-
-       
     }
 
     void HandleRotation()
@@ -87,20 +95,13 @@ HandleMovement();
         if (isGrounded)
         {
             animator.SetBool("isJumping", false);
-            animator.SetBool("isLanding", true);
 
             if (Input.GetButtonDown("Jump")) // Espacio por defecto
             {
-		animator.SetBool("isWalkingBackwards", false);
-
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                 animator.SetBool("isJumping", true);
                 animator.SetBool("isLanding", false);
             }
-        }
-        else
-        {
-            animator.SetBool("isLanding", false);
         }
     }
 
@@ -109,12 +110,14 @@ HandleMovement();
         animator.SetFloat("VelocityY", rb.linearVelocity.y);
     }
 
-    private void OnCollisionStay(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
         // Verificar si el objeto tocado tiene la etiqueta "Ground"
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+            animator.SetBool("isLanding",true);
+            Debug.Log("Landing detected. isGrounded set to true.");
         }
     }
 
@@ -124,6 +127,16 @@ HandleMovement();
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+            Debug.Log("Left ground. isGrounded set to false.");
         }
     }
+
+    private void OnCollisionStay(Collision collision)
+{
+    if (collision.gameObject.CompareTag("Ground"))
+    {
+        animator.SetBool("isLanding", false);
+    }
+}
+
 }

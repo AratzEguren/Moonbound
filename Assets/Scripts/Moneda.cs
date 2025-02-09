@@ -2,6 +2,14 @@ using UnityEngine;
 
 public class Moneda : MonoBehaviour
 {
+    private AudioSource audioSource;
+
+    void Start()
+    {
+        // Get the AudioSource component
+        audioSource = GetComponent<AudioSource>();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         // Comprueba si el objeto que colisiona tiene el tag "Player"
@@ -14,8 +22,14 @@ public class Moneda : MonoBehaviour
                 coinCounter.AddCoin();
             }
 
-            // Destruye la moneda
-            Destroy(gameObject);
+            // Play the coin collection sound
+            if (audioSource != null)
+            {
+                audioSource.Play();
+            }
+
+            // Destruye la moneda después de que se reproduzca el sonido
+            Destroy(gameObject, audioSource.clip.length);
         }
     }
 }

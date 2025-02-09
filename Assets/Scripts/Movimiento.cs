@@ -9,6 +9,9 @@ public class Movimiento : MonoBehaviour
     public float jumpForce = 5f;
     private float moveTimer;
 
+    private AudioSource audioSource;
+
+
     private Rigidbody rb;
     private bool isGrounded;
     private Vector3 moveDirection;
@@ -16,6 +19,7 @@ public class Movimiento : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -101,6 +105,11 @@ public class Movimiento : MonoBehaviour
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                 animator.SetBool("isJumping", true);
                 animator.SetBool("isLanding", false);
+                // Play the jump sound
+                if (audioSource != null)
+                {
+                    audioSource.Play();
+                }
             }
         }
     }

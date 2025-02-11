@@ -6,8 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/MainMenu.unity
+    guid: e5d62b2004dc2eb42afe6d5372f3cf50
+  - enabled: 1
+    path: Assets/Scenes/MoonBound_level1.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  m_configObjects:
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - enabled: 1
+    path: Assets/Scenes/CiudadLevel2.unity
+    guid: 98e258b1eb4063f4db302c8fc48ee737
+  - enabled: 1
+    path: Assets/Scenes/MoonboundLevel3.unity
+    guid: 09b0ba0ea99b648438407af79569e922
+  - enabled: 1
+    path: Assets/Scenes/Nivel4.unity
+    guid: 9a28bb4b97dab1548acf55cca915e06c
+  m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

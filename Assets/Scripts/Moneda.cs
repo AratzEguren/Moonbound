@@ -2,13 +2,7 @@ using UnityEngine;
 
 public class Moneda : MonoBehaviour
 {
-    private AudioSource audioSource;
-
-    void Start()
-    {
-        // Get the AudioSource component
-        audioSource = GetComponent<AudioSource>();
-    }
+    public AudioClip coinSound;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -23,13 +17,13 @@ public class Moneda : MonoBehaviour
             }
 
             // Play the coin collection sound
-            if (audioSource != null)
+            if (coinSound != null)
             {
-                audioSource.Play();
+                AudioSource.PlayClipAtPoint(coinSound, transform.position);
             }
 
-            // Destruye la moneda después de que se reproduzca el sonido
-            Destroy(gameObject, audioSource.clip.length);
+            // Destroy the coin object instantly
+            Destroy(gameObject);
         }
     }
 }

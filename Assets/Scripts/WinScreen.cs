@@ -56,6 +56,6 @@ public class WinScreen : MonoBehaviour
         CountdownText.text = "Next level in: 0";
         yield return new WaitForSeconds(1f);
 
-        SceneManager.LoadScene("ExampleScene"); // Replace "NextSceneName" with the name of your next scene
+        SceneManager.LoadScene("CiudadLevel2"); // Replace "NextSceneName" with the name of your next scene
     }
 }

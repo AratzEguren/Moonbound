@@ -11,5 +11,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MoonBound_level1.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/CiudadLevel2.unity
+    guid: 98e258b1eb4063f4db302c8fc48ee737
+  - enabled: 1
+    path: Assets/Scenes/MoonboundLevel3.unity
+    guid: 09b0ba0ea99b648438407af79569e922
+  - enabled: 1
+    path: Assets/Scenes/Nivel4.unity
+    guid: 9a28bb4b97dab1548acf55cca915e06c
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

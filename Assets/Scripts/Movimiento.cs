@@ -10,8 +10,6 @@ public class Movimiento : MonoBehaviour
     private float moveTimer;
 
     private AudioSource audioSource;
-
-
     private Rigidbody rb;
     private bool isGrounded;
     private Vector3 moveDirection;
@@ -20,11 +18,11 @@ public class Movimiento : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
-        animator = GetComponent<Animator>();
         HandleMovement();
         HandleRotation();
         HandleJump();
@@ -35,10 +33,6 @@ public class Movimiento : MonoBehaviour
     {
         float moveInput = Input.GetAxis("Vertical"); // W/S o flechas arriba/abajo
         float moveSpeed = walkSpeed;
-
-        Vector3 velocity = moveDirection * moveSpeed;
-        velocity.y = rb.linearVelocity.y; // Mantener la velocidad vertical (gravedad)
-        rb.linearVelocity = velocity;
 
         if (moveInput > 0) // Avanzando
         {
@@ -52,7 +46,7 @@ public class Movimiento : MonoBehaviour
 
             moveTimer += Time.deltaTime;
 
-            if (moveTimer >= 2f) // Después de 2 segundo andando, corre
+            if (moveTimer >= 2f) // Después de 2 segundos andando, corre
             {
                 moveSpeed = runSpeed;
                 animator.SetBool("isMoving", false);
@@ -61,9 +55,6 @@ public class Movimiento : MonoBehaviour
                 animator.SetBool("isWalkingBackwards", false);
             }
         }
-        
-
-       
         else if (moveInput < 0) // Retrocediendo
         {
             moveDirection = -transform.forward;
@@ -81,7 +72,13 @@ public class Movimiento : MonoBehaviour
             animator.SetBool("isStillMoving", false);
             animator.SetBool("isWalkingBackwards", false);
             animator.SetBool("isRunningBackWards", false);
+
+            moveTimer = 0f; // Reset the move timer when not moving
         }
+
+        Vector3 velocity = moveDirection * moveSpeed;
+        velocity.y = rb.linearVelocity.y; // Mantener la velocidad vertical (gravedad)
+        rb.linearVelocity = velocity;
     }
 
     void HandleRotation()
@@ -105,7 +102,6 @@ public class Movimiento : MonoBehaviour
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                 animator.SetBool("isJumping", true);
                 animator.SetBool("isLanding", false);
-                // Play the jump sound
                 if (audioSource != null)
                 {
                     audioSource.Play();
@@ -116,7 +112,7 @@ public class Movimiento : MonoBehaviour
 
     void UpdateAnimatorParameters()
     {
-        animator.SetFloat("VelocityY", rb.linearVelocity.y);
+        animator.SetFloat("VelocityY", rb.linearVelocity.y); // Ensure this parameter exists in Animator
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -125,7 +121,7 @@ public class Movimiento : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            animator.SetBool("isLanding",true);
+            animator.SetBool("isLanding", true);
             Debug.Log("Landing detected. isGrounded set to true.");
         }
     }
@@ -141,11 +137,10 @@ public class Movimiento : MonoBehaviour
     }
 
     private void OnCollisionStay(Collision collision)
-{
-    if (collision.gameObject.CompareTag("Ground"))
     {
-        animator.SetBool("isLanding", false);
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            animator.SetBool("isLanding", false);
+        }
     }
-}
-
 }
